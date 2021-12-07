@@ -1,7 +1,25 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useEffect, useState } from 'react';
+import { getTransactions } from '../lib/transactions';
+import { Transaction } from '../types/transactions.types';
+import { ArrowNarrowDownIcon, ArrowNarrowUpIcon, BeakerIcon } from '@heroicons/react/solid';
 
 const Home: NextPage = () => {
+  // state variables
+  const [transactions, updateTransactions] = useState<Transaction[]>([]);
+  // only fetch at the beginning
+  useEffect(() => {
+    // async function
+    const getData = async () => {
+      const data = await getTransactions();
+      // update the state
+      updateTransactions(data);
+    }
+    // call async function
+    getData();
+  }, []);
+  console.log({transactions})
   return (
     <div className="container mx-auto">
       <Head>
@@ -10,8 +28,36 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex flex-col flex-grow py-8">
-        <h1 className="sm:text-3xl text-2xl font-medium mb-4 text-gray-900">Hello from Nextjs</h1>
+      <main className="flex flex-col py-8">
+        <div className="flex justify-center">
+          <h1 className="sm:text-3xl text-2xl font-medium mb-4 text-gray-900">Expense Tracker</h1>
+        </div>
+        <div className="self-center md:max-w-lg w-full px-2 sm:px-0 sm:w-3/4 divide-y divide-gray-200">
+          <div className="flex justify-between py-4">
+            <ArrowNarrowUpIcon className="h-8 w-8 py-1 px-2 rounded-full bg-green-100 text-green-800" />
+            <div className="flex flex-grow flex-col px-8">
+              <span className="font-medium">Monthly Payment</span>
+              <span className="mt-1 text-gray-500 text-sm">November 21, 2021</span>
+            </div>
+            <div className="text-green-500">$8,000.00</div>
+          </div>
+          <div className="flex justify-between py-4">
+            <ArrowNarrowUpIcon className="h-8 w-8 py-1 px-2 rounded-full bg-green-100 text-green-800" />
+            <div className="flex flex-grow flex-col px-8">
+              <span className="font-medium">Freelance Income</span>
+              <span className="mt-1 text-gray-500 text-sm">December 14, 2021</span>
+            </div>
+            <div className="text-green-500">$3,000.00</div>
+          </div>
+          <div className="flex justify-between py-4">
+            <ArrowNarrowDownIcon className="h-8 w-8 py-1 px-2 rounded-full bg-red-200 text-red-800" />
+            <div className="flex flex-grow flex-col px-8">
+              <span className="font-medium">Had dinner with my love</span>
+              <span className="mt-1 text-gray-500 text-sm">December 24, 2021</span>
+            </div>
+            <div className="text-red-600">$3,000.00</div>
+          </div>
+        </div>
       </main>
     </div>
   )
