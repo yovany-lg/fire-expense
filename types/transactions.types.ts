@@ -12,3 +12,10 @@ export interface Transaction {
   description: string;
   date: Timestamp;
 }
+
+export type FormInput = {
+  description: string,
+  amount: number,
+  date: string,
+  type: string,
+};

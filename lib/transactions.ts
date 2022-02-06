@@ -1,5 +1,5 @@
-import { collection, getDocs } from "firebase/firestore";
-import { Transaction } from "../types/transactions.types";
+import { addDoc, collection, doc, getDocs, setDoc, Timestamp } from "firebase/firestore";
+import { FormInput, Transaction } from "../types/transactions.types";
 import { db } from './firebase'
 
 export async function getTransactions(): Promise<Transaction[]> {
@@ -14,4 +14,16 @@ export async function getTransactions(): Promise<Transaction[]> {
   });
   // return the data
   return transactions;
+}
+
+export async function saveTransaction(data: FormInput): Promise<void> {
+  const transactionsRef = collection(db, "transactions");
+  try {
+    await addDoc(transactionsRef, {
+      ...data,
+      date: Timestamp.fromDate(new Date(data.date))
+    });
+  } catch (error) {
+    console.error(error)
+  }
 }
