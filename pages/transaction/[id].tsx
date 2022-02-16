@@ -16,7 +16,7 @@ const TransactionPage = ({ }) => {
       }
     }
     datFetch();
-  }, []);
+  }, [query.id]);
 
   console.log({query, data});
   const onSuccess = () => {

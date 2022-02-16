@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { FormInput } from "../types/transactions.types";
-import { saveTransaction } from "../lib/transactions";
+import { FormInput, Transaction } from "../types/transactions.types";
+import { saveTransaction, updateTransaction } from "../lib/transactions";
 
 interface TransactionFormProps {
-  initialData?: FormInput;
+  initialData?: Transaction;
   onSuccess: () => void;
 }
 
@@ -14,15 +14,20 @@ const errorCSS = 'focus:ring-red-500 focus:border-red-500 ring-red-500 border-re
 const normalFocus = 'focus:ring-indigo-500 focus:border-indigo-500';
 
 const TransactionForm: FC<TransactionFormProps> = ({ onSuccess, initialData }) => {
+  const dateTime = initialData?.date.toDate();
   const { register, reset, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormInput>({
     defaultValues: {
-      ...initialData
+      ...initialData,
+      date: dateTime?.toISOString().substring(0, 16)
     }    
   });
-  console.log(initialData)
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
     console.log('Save to firestore', data);
-    await saveTransaction(data);
+    if (initialData?.id) {
+      await updateTransaction(data);
+    } else {
+      await saveTransaction(data);
+    }
     onSuccess();
     reset();
   }

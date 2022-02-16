@@ -14,6 +14,7 @@ export interface Transaction {
 }
 
 export type FormInput = {
+  id?: string
   description: string,
   amount: number,
   date: string,
