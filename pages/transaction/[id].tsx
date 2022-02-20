@@ -4,28 +4,28 @@ import TransactionForm from "../../components/TransactionForm";
 import { getTransaction } from "../../lib/transactions";
 import { Transaction } from "../../types/transactions.types";
 
-const TransactionPage = ({ }) => {
+const TransactionPage = ({ user }) => {
   const [data, setData] = useState<Transaction>();
   const { query, push } = useRouter();
   useEffect(() => {
     const datFetch = async () => {
-      if (query.id) {
-        const result = await getTransaction(query.id as string);
+      if (query.id && user?.uid) {
+        const result = await getTransaction(query.id as string, user?.uid);
         console.log(result);
         setData(result);
       }
     }
     datFetch();
-  }, [query.id]);
+  }, [query.id, user?.uid]);
 
-  console.log({query, data});
+  console.log({query, data, user});
   const onSuccess = () => {
     push('/');
   }
 
   return (
     <div className="w-full">
-      {data && <TransactionForm onSuccess={onSuccess} initialData={data as any} />}
+      {data && <TransactionForm onSuccess={onSuccess} initialData={data as any} uid={user?.uid} />}
     </div>
   );
 };

@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const authState = useProvideAuth();
   console.log({ user: authState.user, isLoading: authState.isLoading })
   return (
-    <Layout>
+    <Layout signOut={authState.signOut}>
       <Component {...pageProps} {...authState} />
     </Layout>
   );

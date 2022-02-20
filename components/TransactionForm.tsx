@@ -6,6 +6,7 @@ import { saveTransaction, updateTransaction } from "../lib/transactions";
 interface TransactionFormProps {
   initialData?: Transaction;
   onSuccess: () => void;
+  uid: string;
 }
 
 const buttonDisabled = 'text-gray-700 bg-gray-100 border-0 focus:outline-none hover:bg-gray-200';
@@ -13,7 +14,7 @@ const buttonDisabled = 'text-gray-700 bg-gray-100 border-0 focus:outline-none ho
 const errorCSS = 'focus:ring-red-500 focus:border-red-500 ring-red-500 border-red-500';
 const normalFocus = 'focus:ring-indigo-500 focus:border-indigo-500';
 
-const TransactionForm: FC<TransactionFormProps> = ({ onSuccess, initialData }) => {
+const TransactionForm: FC<TransactionFormProps> = ({ onSuccess, initialData, uid }) => {
   const dateTime = initialData?.date.toDate();
   const { register, reset, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormInput>({
     defaultValues: {
@@ -24,9 +25,9 @@ const TransactionForm: FC<TransactionFormProps> = ({ onSuccess, initialData }) =
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
     console.log('Save to firestore', data);
     if (initialData?.id) {
-      await updateTransaction(data);
+      await updateTransaction(data, uid);
     } else {
-      await saveTransaction(data);
+      await saveTransaction(data, uid);
     }
     onSuccess();
     reset();

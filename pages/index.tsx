@@ -1,25 +1,28 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { FC, Fragment, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getTransactions } from '../lib/transactions';
 import { Transaction } from '../types/transactions.types';
 import SingleTransaction from '../components/SingleTransaction';
 import NewTransaction from '../components/NewTransaction';
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ user }) => {
   // state variables
   const [transactions, updateTransactions] = useState<Transaction[]>([]);
   // only fetch at the beginning
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     // async function
     const getData = async () => {
-      const data = await getTransactions();
+      const data = await getTransactions(user.uid);
       // update the state
       updateTransactions(data);
     }
     // call async function
     getData();
-  }, []);
+  }, [user?.uid]);
 
   const [isOpen, setIsOpen] = useState(false)
   const closeModal = () => {
@@ -52,7 +55,7 @@ const Home: NextPage = () => {
           <SingleTransaction key={transaction.id} transaction={transaction} />
         ))}
       </div>
-      <NewTransaction isOpen={isOpen} onClose={closeModal} />
+      <NewTransaction isOpen={isOpen} onClose={closeModal} uid={user?.uid} />
     </>
   )
 }

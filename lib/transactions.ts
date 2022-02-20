@@ -1,10 +1,10 @@
 import { addDoc, collection, doc, getDoc, getDocs, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { FormInput, Transaction } from "../types/transactions.types";
-import { db } from './firebase'
+import { db, auth } from './firebase'
 
-export async function getTransactions(): Promise<Transaction[]> {
+export async function getTransactions(uid: string): Promise<Transaction[]> {
   // collection ref
-  const transactionsRef = collection(db, "transactions");
+  const transactionsRef = collection(db, 'users', uid, 'transactions');
   // get docs
   const snapshot = await getDocs(transactionsRef);
   const transactions: Transaction[] = [];
@@ -16,8 +16,8 @@ export async function getTransactions(): Promise<Transaction[]> {
   return transactions;
 }
 
-export async function saveTransaction(data: FormInput): Promise<void> {
-  const transactionsRef = collection(db, "transactions");
+export async function saveTransaction(data: FormInput, uid: string): Promise<void> {
+  const transactionsRef = collection(db,'users', uid, 'transactions');
   try {
     await addDoc(transactionsRef, {
       ...data,
@@ -28,8 +28,8 @@ export async function saveTransaction(data: FormInput): Promise<void> {
   }
 }
 
-export async function updateTransaction(data: FormInput): Promise<void> {
-  const ref = doc(db, "transactions", data.id as string);
+export async function updateTransaction(data: FormInput, uid: string): Promise<void> {
+  const ref = doc(db, 'users', uid, 'transactions', data.id as string);
   try {
     await updateDoc(ref, {
       ...data,
@@ -40,8 +40,8 @@ export async function updateTransaction(data: FormInput): Promise<void> {
   }
 }
 
-export async function getTransaction(id: string): Promise<Transaction> {
-  const docRef = doc(db, 'transactions', id);
+export async function getTransaction(id: string, uid: string): Promise<Transaction> {
+  const docRef = doc(db, 'users', uid, 'transactions', id);
   const docSnapshot = await getDoc(docRef);
   let data: any;
   if (docSnapshot.exists()) {
