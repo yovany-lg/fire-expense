@@ -1,21 +1,34 @@
 import Link from 'next/link';
 import { FC } from 'react';
+import { AppUser } from '../types/user.types';
 
-const Layout: FC = ({ children, signOut }) => {
+interface LayoutProps {
+  user?: AppUser;
+  signOut: () => void;
+}
+
+const Layout: FC<LayoutProps> = ({ children, signOut, user}) => {
   return (
-    <div className="w-full px-4 lg:max-w-2xl lg:mx-auto lg:px-0">
-      <header className="py-8 mx-auto w-full sm:w-3/4 lg:w-full flex justify-between">
+    <div className="w-full px-4 md:max-w-md lg:max-w-lg md:mx-auto md:px-0">
+      <header className="pt-6 mx-auto w-full flex justify-between">
         <Link href="/" passHref>
           <a className="sm:text-3xl text-2xl font-medium mb-4 text-gray-900">Expense Tracker</a>
         </Link>
-        <button
-          className="bg-sky-500 hover:bg-sky-700 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"
-          onClick={() => signOut()}
-        >
-          Sign Out
-        </button>
+        {user && (
+          <button
+            className=" hover:text-red-600 text-gray-700 px-5 py-2.5 text-base leading-5 rounded-md font-medium border border-slate-300 hover:border-red-500"
+            onClick={signOut}
+          >
+            Sign Out
+          </button>
+        )}
       </header>
-      <main className="flex flex-col mx-auto w-full sm:w-3/4 lg:w-full justify-center items-center">
+      {user && (
+        <div>
+          <h2 className="text-lg pt-2 pb-6">Welcome, <span className="font-medium ">{user.name}</span></h2>
+        </div>
+      )}
+      <main className="flex flex-col mx-auto w-full justify-center items-center">
         {children}
       </main>
     </div>

@@ -12,7 +12,7 @@ const LoginPage: FC<LoginPageProps> = ({ signIn }) => {
   }
   return (
     <button
-      className="bg-sky-500 hover:bg-sky-700 px-5 py-2.5 text-sm leading-5 rounded-md font-semibold text-white"
+      className="hover:bg-emerald-600 bg-emerald-500 text-white px-5 py-2.5 text-base leading-5 rounded-md font-medium border"
       onClick={() => signIn(onSuccess)}
     >
       Sign In

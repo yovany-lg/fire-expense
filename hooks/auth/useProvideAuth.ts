@@ -3,16 +3,10 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { signInWithGoogle, userSignOut } from "../../lib/auth";
 import { auth } from "../../lib/firebase";
-
-interface User {
-  uid: string;
-  email:string;
-  name:string;
-  photoUrl:string;
-}
+import { AppUser } from "../../types/user.types";
 
 export default function useProvideAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -28,7 +22,7 @@ export default function useProvideAuth() {
         setIsLoading(false);
       } else {
         router.push('/login');
-        setUser(null);
+        setUser(undefined);
         setIsLoading(false);
       }
     });
@@ -48,11 +42,11 @@ export default function useProvideAuth() {
         });
         callback && callback();
       } else {
-        setUser(null);
+        setUser(undefined);
       }
     } catch (error) {
       console.error(error)
-      setUser(null);
+      setUser(undefined);
     } finally {
       setIsLoading(false);
     }
@@ -61,10 +55,10 @@ export default function useProvideAuth() {
     setIsLoading(false);
     try {
       await userSignOut();
-      setUser(null);
+      setUser(undefined);
     } catch (error) {
       console.error(error)
-      setUser(null);
+      setUser(undefined);
     } finally {
       setIsLoading(false);
     }
