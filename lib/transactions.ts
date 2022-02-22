@@ -1,6 +1,7 @@
-import { addDoc, collection, doc, getDoc, getDocs, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, runTransaction, Timestamp, updateDoc } from "firebase/firestore";
+import { Balance } from "../types/balance.types";
 import { FormInput, Transaction } from "../types/transactions.types";
-import { db, auth } from './firebase'
+import { db } from './firebase'
 
 export async function getTransactions(uid: string): Promise<Transaction[]> {
   // collection ref
@@ -17,11 +18,25 @@ export async function getTransactions(uid: string): Promise<Transaction[]> {
 }
 
 export async function saveTransaction(data: FormInput, uid: string): Promise<void> {
-  const transactionsRef = collection(db,'users', uid, 'transactions');
+  const balanceRef = doc(db, 'balances', uid);
   try {
-    await addDoc(transactionsRef, {
-      ...data,
-      date: Timestamp.fromDate(new Date(data.date))
+    await runTransaction(db, async (transaction) => {
+      const currentBalance = (await transaction.get(balanceRef)).data() as Balance;
+      if (data.type === 'income') {
+        currentBalance.balance = currentBalance.balance + data.amount;
+        currentBalance.income = currentBalance.income + data.amount;
+      } else {
+        currentBalance.balance = currentBalance.balance - data.amount;
+        currentBalance.expenses = currentBalance.expenses + data.amount;
+      }
+      transaction.update(balanceRef, {
+        ...currentBalance
+      });
+      const transactionsRef = doc(collection(db,'users', uid, 'transactions'));
+      transaction.set(transactionsRef, {
+        ...data,
+        date: Timestamp.fromDate(new Date(data.date))
+      })
     });
   } catch (error) {
     console.error(error)
