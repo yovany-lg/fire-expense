@@ -10,17 +10,19 @@ interface LayoutProps {
 const Layout: FC<LayoutProps> = ({ children, signOut, user}) => {
   return (
     <div className="w-full px-4 md:max-w-md lg:max-w-lg md:mx-auto md:px-0">
-      <header className="pt-6 mx-auto w-full flex justify-between">
+      <header className="pt-6 mx-auto w-full flex justify-between items-center">
         <Link href="/" passHref>
           <a className="sm:text-3xl text-2xl font-medium mb-4 text-gray-900">Expense Tracker</a>
         </Link>
         {user && (
-          <button
-            className=" hover:text-red-600 text-gray-700 px-5 py-2.5 text-base leading-5 rounded-md font-medium border border-slate-300 hover:border-red-500"
-            onClick={signOut}
-          >
-            Sign Out
-          </button>
+          <div>
+            <button
+              className="hover:text-red-600 text-gray-700 px-4 py-2 text-sm rounded-md font-medium border border-slate-300 hover:border-red-500"
+              onClick={signOut}
+            >
+              Sign Out
+            </button>
+          </div>
         )}
       </header>
       {user && (

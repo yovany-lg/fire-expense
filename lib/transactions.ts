@@ -43,12 +43,40 @@ export async function saveTransaction(data: FormInput, uid: string): Promise<voi
   }
 }
 
-export async function updateTransaction(data: FormInput, uid: string): Promise<void> {
-  const ref = doc(db, 'users', uid, 'transactions', data.id as string);
+export async function updateTransaction(prevData: FormInput, data: FormInput, uid: string): Promise<void> {
+  const transactionRef = doc(db, 'users', uid, 'transactions', data.id as string);
+  const balanceRef = doc(db, 'balances', uid);
   try {
-    await updateDoc(ref, {
-      ...data,
-      date: Timestamp.fromDate(new Date(data.date))
+    await runTransaction(db, async (transaction) => {
+      const balanceDoc = await transaction.get(balanceRef);
+      if (!balanceDoc.exists()) {
+        throw new Error('Error while updating the Transaction');
+      }
+      const balanceData = balanceDoc.data() as Balance;
+      // Revert step
+      if (prevData.type === 'income') {
+        balanceData.balance = balanceData.balance - prevData.amount;
+        balanceData.income = balanceData.income - prevData.amount;
+      } else {
+        balanceData.balance = balanceData.balance + prevData.amount;
+        balanceData.expenses = balanceData.expenses - prevData.amount;
+      }
+      // Update step
+      if (data.type === 'income') {
+        balanceData.balance = balanceData.balance + data.amount;
+        balanceData.income = balanceData.income + data.amount;
+      } else {
+        balanceData.balance = balanceData.balance - data.amount;
+        balanceData.expenses = balanceData.expenses + data.amount;
+      }
+
+      transaction.update(balanceRef, {
+        ...balanceData
+      });
+      transaction.update(transactionRef, {
+        ...data,
+        date: Timestamp.fromDate(new Date(data.date))
+      })
     });
   } catch (error) {
     console.error(error)

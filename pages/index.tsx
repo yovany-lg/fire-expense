@@ -51,8 +51,8 @@ const Home: NextPage<HomePageProps> = ({ user }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {balance && <BalanceComponent balance={balance} />}
-      <div className="flex w-full justify-between p-4">
-        <h2>Transactions</h2>
+      <div className="flex w-full justify-between p-4 items-center">
+        <h2 className="text-lg">Transactions</h2>
         <button
           type="button"
           onClick={openModal}

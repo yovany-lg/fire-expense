@@ -5,7 +5,6 @@ import useProvideAuth from '../hooks/auth/useProvideAuth';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const authState = useProvideAuth();
-  console.log({ user: authState.user, isLoading: authState.isLoading })
   return (
     <Layout signOut={authState.signOut} user={authState.user}>
       <Component {...pageProps} {...authState} />

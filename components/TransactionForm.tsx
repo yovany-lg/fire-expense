@@ -23,9 +23,8 @@ const TransactionForm: FC<TransactionFormProps> = ({ onSuccess, initialData, uid
     }    
   });
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
-    console.log('Save to firestore', data);
     if (initialData?.id) {
-      await updateTransaction(data, uid);
+      await updateTransaction(initialData as any, data, uid);
     } else {
       await saveTransaction(data, uid);
     }

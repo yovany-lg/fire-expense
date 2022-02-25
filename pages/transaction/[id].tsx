@@ -11,14 +11,12 @@ const TransactionPage = ({ user }) => {
     const datFetch = async () => {
       if (query.id && user?.uid) {
         const result = await getTransaction(query.id as string, user?.uid);
-        console.log(result);
         setData(result);
       }
     }
     datFetch();
   }, [query.id, user?.uid]);
 
-  console.log({query, data, user});
   const onSuccess = () => {
     push('/');
   }
