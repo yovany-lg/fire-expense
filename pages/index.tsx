@@ -1,14 +1,12 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import { useEffect, useState } from 'react';
-import { getTransactions } from '../lib/transactions';
-import { Transaction } from '../types/transactions.types';
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import { useState } from 'react';
 import SingleTransaction from '../components/SingleTransaction';
 import NewTransaction from '../components/NewTransaction';
 import { AppUser } from '../types/user.types';
 import BalanceComponent from '../components/BalanceComponent';
-import { Balance } from '../types/balance.types';
-import { getBalance } from '../lib/balance';
+import useGetBalance from '../hooks/balance/useGetBalance';
+import useGetTransactions from '../hooks/transactions/useGetTransactions';
 
 interface HomePageProps {
   user: AppUser;
@@ -16,32 +14,16 @@ interface HomePageProps {
 
 const Home: NextPage<HomePageProps> = ({ user }) => {
   // state variables
-  const [transactions, updateTransactions] = useState<Transaction[]>([]);
-  const [balance, updateBalance] = useState<Balance>();
-  // only fetch at the beginning
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    // async function
-    const getData = async () => {
-      const data = await getTransactions(user.uid);
-      const balanceData = await getBalance(user.uid);
-      // update the state
-      updateTransactions(data);
-      updateBalance(balanceData);
-    }
-    // call async function
-    getData();
-  }, [user?.uid]);
+  const { transactions, loadMore, hasNext } = useGetTransactions(user?.uid);
+  const { balance } = useGetBalance(user?.uid);
 
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   const closeModal = () => {
     setIsOpen(false);
-  }
+  };
   const openModal = () => {
     setIsOpen(true);
-  }
+  };
 
   return (
     <>
@@ -66,9 +48,17 @@ const Home: NextPage<HomePageProps> = ({ user }) => {
           <SingleTransaction key={transaction.id} transaction={transaction} />
         ))}
       </div>
+      <button
+        type="button"
+        onClick={loadMore}
+        disabled={!hasNext}
+        className="px-4 py-2 mb-4 text-sm font-medium rounded-md border border-slate-300 hover:border-indigo-300 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
+      >
+        Load More
+      </button>
       <NewTransaction isOpen={isOpen} onClose={closeModal} uid={user?.uid} />
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
