@@ -7,6 +7,7 @@ import { AppUser } from '../types/user.types';
 import BalanceComponent from '../components/BalanceComponent';
 import useGetBalance from '../hooks/balance/useGetBalance';
 import useGetTransactions from '../hooks/transactions/useGetTransactions';
+import withSession from '@/lib/server/withSession';
 
 interface HomePageProps {
   user: AppUser;
@@ -62,3 +63,12 @@ const Home: NextPage<HomePageProps> = ({ user }) => {
 };
 
 export default Home;
+
+export const getServerSideProps = withSession(({ user }) => {
+  console.log(user);
+  return {
+    props: {
+      user,
+    },
+  };
+});

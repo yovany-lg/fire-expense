@@ -1,9 +1,9 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
-import { signInWithGoogle, userSignOut } from "../../lib/auth";
-import { auth } from "../../lib/firebase";
-import { AppUser } from "../../types/user.types";
+import { onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useState } from 'react';
+import { signInWithGoogle, userSignOut } from '../../lib/auth';
+import { auth } from '../../lib/firebase';
+import { AppUser } from '../../types/user.types';
 
 export default function useProvideAuth() {
   const [user, setUser] = useState<AppUser | undefined>(undefined);
@@ -17,7 +17,7 @@ export default function useProvideAuth() {
           uid: user.uid,
           email: user.email || '',
           name: user.displayName || '',
-          photoUrl: user.photoURL || ''
+          photoUrl: user.photoURL || '',
         });
         setIsLoading(false);
       } else {
@@ -29,7 +29,7 @@ export default function useProvideAuth() {
     return unsubscribe;
   }, []);
 
-  const signIn = useCallback(async (callback: () => void) => {
+  const signIn = useCallback(async () => {
     setIsLoading(true);
     try {
       const user = await signInWithGoogle();
@@ -38,31 +38,33 @@ export default function useProvideAuth() {
           uid: user.uid,
           email: user.email || '',
           name: user.displayName || '',
-          photoUrl: user.photoURL || ''
+          photoUrl: user.photoURL || '',
         });
-        callback && callback();
+        router.push('/');
       } else {
         setUser(undefined);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
       setUser(undefined);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [router]);
+
   const signOut = useCallback(async () => {
     setIsLoading(false);
     try {
       await userSignOut();
       setUser(undefined);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       setUser(undefined);
     } finally {
       setIsLoading(false);
+      router.push('/login');
     }
-  }, []);
+  }, [router]);
 
   return { user, isLoading, signIn, signOut };
 }

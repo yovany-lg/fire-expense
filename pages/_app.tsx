@@ -1,5 +1,5 @@
 import '../styles/global.css';
-import type { AppProps } from 'next/app'
+import type { AppProps } from 'next/app';
 import Layout from '../components/Layout';
 import useProvideAuth from '../hooks/auth/useProvideAuth';
 
@@ -12,4 +12,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp
+export default MyApp;
